@@ -203,6 +203,7 @@ def default_document_generation(source_file_path):
         matching_strings_df = convert_to_dataframe(matching_strings_positions_populated)
 
         print('=================================================')
+        print('THIS IS GENE MATCHER UPDATED')
 
         if debug:
             print('df_to_analyse\n', df_to_analyse, '\n')
