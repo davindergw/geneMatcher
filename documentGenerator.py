@@ -188,7 +188,7 @@ def default_document_generation(source_file_path):
     containing matching strings and their positions.
     """
     try:
-        debug = True
+        debug = False
 
         # What if a spreadsheet of numbers has a missing cell in both rows - will these cells be converted into 0 and be matched?
 
@@ -203,7 +203,6 @@ def default_document_generation(source_file_path):
         matching_strings_df = convert_to_dataframe(matching_strings_positions_populated)
 
         print('=================================================')
-        print('THIS IS GENE MATCHER UPDATED')
 
         if debug:
             print('df_to_analyse\n', df_to_analyse, '\n')
@@ -215,7 +214,7 @@ def default_document_generation(source_file_path):
             print('matching_strings_df\n', matching_strings_df)
         else:
             print('\n Matching Genes:')
-            print('\n Matching Genes:', matching_strings_df)
+            print('\n', matching_strings_df)
         return matching_strings_df
     except Exception as e:
         traceback.print_exc()
