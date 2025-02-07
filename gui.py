@@ -1,75 +1,144 @@
 import os
-import shutil
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
+from tkinter import messagebox
 import traceback
 from documentGenerator import generate_document
 from fileHandler import copy_file, clear_files, save_file
+
 # Initialize a variable to store the file path
 source_file_path = None
+status_label = None
+status_label = None
+prev_width = None  #the width of a window before a change was made to the size of the app window
 
-# Function to handle file selection
-def select_file():
-    global source_file_path
-    source_file_path = filedialog.askopenfilename(
-        filetypes=[("Excel files", "*.xls *.xlsx")]
-    )
-    if source_file_path:
-        status_label.config(text=f"Selected: {os.path.basename(source_file_path)}")
-    else:
-        status_label.config(text="No file selected")
-
-def process_file():
+def adjust_font(event):
+    """ 
+    Adjusts the font size only if the window width changes significantly (by more than 10%).
+    """
     try:
-        if not source_file_path:
-            messagebox.showwarning("No File", "Please select a file before submitting.")
-            return
+        min_font_size = 12
+        max_font_size = 16
+        width_factor = 30
+        
+        new_size = event.width // width_factor #formula creates a number that increases in proportion to the width of the application window. event.width = width of the window after being resized
+        new_size = max(min_font_size, new_size) #makes sure the font is not smaller than the minimum font sixe
+        new_size = min(max_font_size, new_size) #makes sure the font is no larger than the maximum font size
 
-        # Now, source_file_path holds the path to the file that was selected by the user
-        dataFile = copy_file(source_file_path, "data")
-        resultFile = generate_document(dataFile)
-        savedResultsFile = save_file(resultFile, 'results.xlsx', destination_folder="results")
-        #print('resultFile', resultFile)
+        new_font = ("Arial", new_size)
+
+        # Apply the new font size to widgets
+        select_button.config(font=new_font)
+        submit_button.config(font=new_font)
+        status_label.config(font=new_font)
 
     except Exception as e:
-        print("An error occurred:")
-        print(str(e))
         traceback.print_exc()
-        messagebox.showerror("Error", f"An error occurred: {e}")
+        messagebox.showerror("Error", f"An error occurred in adjust_font: {e}")
 
+def select_file():
+    """
+    Open a file dialog to allow the user to select an Excel file.
+    The selected file's path is stored in the global variable 'source_file_path'.
+    """
+    try:
+        global source_file_path # the global keyword needs to be used so that the global variable defined out of the function can be modified
+        global status_label
 
+        filetypes = [
+            ("Excel files", "*.xls *.xlsx") #first element is a description of the file type. The next element is a list of permitted file types
+        ]
+        
+        source_file_path = filedialog.askopenfilename(filetypes=filetypes) # Opens the file dialog for the user to select a file. Once the user has selected a file, the file path is returned
 
-# Function to set up the GUI
+        if source_file_path:
+            file_name = os.path.basename(source_file_path) #gets the filename on the end of the file path
+            status_label.config(text=f"Selected: {file_name}")
+        else:
+            status_label.config(text="No file selected")
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in select_file: {e}"
+        messagebox.showerror("Error", error_message)
+
+def process_file():
+    """
+    Process the selected file by copying it, generating a document from it, 
+    and saving the results to the specified folder.
+    """
+    try:
+        if not source_file_path: # global keyword is not needed as the global variable is not being modified
+            messagebox.showwarning("No File", "Please select a file before submitting.")
+            return
+        clear_files()
+        # Step 1: Copy the selected file to the "data" folder
+        dataFile = copy_file(source_file_path, "data")
+
+        # Step 2: Generate a data frame using the copied file
+        resultFile = generate_document(source_file_path)
+
+        # Step 3: Save the generated document to the "results" folder
+        savedResultsFile = save_file(resultFile, 'results.xlsx', destination_folder="results")
+    
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in process_file: {e}"
+        messagebox.showerror("Error", error_message)
+
 def setup_gui():
-    # Create the main window
-    root = tk.Tk()
-    root.title("Gene Matcher")
-    root.geometry("400x250")
+    """
+    Set up the main window, create and arrange the widgets using grid,
+    and run the Tkinter event loop for the GUI.
+    """
+    try:
+        global select_button, submit_button, status_label  # Needed for adjust_font function
 
-    # Create the file selection button
-    drag_drop_label = tk.Label(
-        root, text="Drag and drop your Excel file or click below to select it:", pady=10
-    )
-    drag_drop_label.pack()
+        root_window = tk.Tk()  # The main window
+        root_window.title("Gene Matcher")
+        root_window.geometry("400x250")
 
-    select_button = tk.Button(root, text="Select File", command=select_file)
-    select_button.pack(pady=10)
+        # Creates a grid of 9 rows and 3 columns. The weights are equal so the rows and columns take up the same amount of space within their container.
+        for row in range(9):  
+            root_window.grid_rowconfigure(row, weight=1)
 
-    select_button = tk.Button(root, text="Clear Files", command=clear_files)
-    select_button.pack(pady=10)
+        for column in range(3):  
+            root_window.grid_columnconfigure(column, weight=1)
 
-    # Create the Submit button
-    submit_button = tk.Button(root, text="Submit", command=process_file)
-    submit_button.pack(pady=20)
+        # Select File button
+        select_button = tk.Button(
+            master=root_window,  # The parent the widget will attach to
+            text="Select File",
+            command=select_file,
+            width=15
+            
+        )
+        select_button.grid(row=3, column=1, pady=10, sticky="nsew")  # pady provides padding above and below the widget. sticky="nsew" expands the widget in all directions (fills entire cell)
 
-    # Label to display status
-    global status_label
-    status_label = tk.Label(root, text="No file selected", fg="gray")
-    status_label.pack(pady=10)
+        # Submit button
+        submit_button = tk.Button(
+            master=root_window,
+            text="Submit",
+            command=process_file,
+            width=15
+        )
+        submit_button.grid(row=4, column=1, pady=10, sticky="nsew")  # Place button in second row, center column
 
-    # Run the GUI event loop
-    root.mainloop()
+        # Status label
+        status_label = tk.Label(
+            master=root_window,
+            text="No file selected",
+            fg="gray"  # Text colour
+        )
+        status_label.grid(row=5, column=1, pady=10, sticky="nsew")  # Place label in third row, center column
 
-# Run the GUI setup when the main program starts
-if __name__ == "__main__":
+        # the adjust_font function will be called every time the configure event occurs. The configure event occurs every time the window resizes
+        root_window.bind("<Configure>", adjust_font)
+
+        root_window.mainloop()  # Start the Tkinter event loop: An infinite loop that will check for events that have been triggered and redraw the GUI / carry out any function calls in accordance with any events that have occurred
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in setup_gui: {e}"
+        messagebox.showerror("Error", error_message)
+
+if __name__ == "__main__": #When a python script is run directly, the value of __name__ is set to __main__
     setup_gui()
