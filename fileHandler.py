@@ -37,10 +37,9 @@ def copy_file(source_path, destination_folder):
         if base_path is None:
             return None
         
-        complete_destination_folder = os.path.join(base_path, destination_folder) # add the folder name onto the destination path to create the path to the folder the file is to be copied to
-        create_dir_if_missing(complete_destination_folder)
-        
-        destination_path = os.path.join(complete_destination_folder, os.path.basename(source_path)) #os.path.basename gets the filname from the end of the path. This is added to the destination folder path to create the full path for the new file
+        file_name = os.path.basename(source_path)
+        destination_path = calculate_full_destination_path(file_name, destination_folder)
+        create_dir_if_missing(destination_path)
         shutil.copy(source_path, destination_path) # actually copies the file from one path to another
         return destination_path
     except Exception as e:
@@ -49,16 +48,37 @@ def copy_file(source_path, destination_folder):
         messagebox.showerror("Error", error_message)
         return None
 
-def create_dir_if_missing(folder_path):
+def create_dir_if_missing(file_path):
     """
-    Checks if a folder exists and creates it if it does not.
+    Ensures the folder for the given file or folder path exists.
+    - If `file_path` is a file, it creates the parent folder.
+    - If `file_path` is a folder, it ensures the folder exists.
     """
     try:
-        if not os.path.exists(folder_path):
+        # Check if the given path is a folder
+        is_folder = os.path.isdir(file_path)
+        
+        # Determine the folder path to check
+        if is_folder:
+            folder_path = file_path
+        else:
+            folder_path = os.path.dirname(file_path)
+        
+        # Check if the folder exists
+        folder_exists = os.path.exists(folder_path)
+        
+        # Create the folder if it does not exist
+        if not folder_exists:
             os.makedirs(folder_path)
+
     except Exception as e:
+        # Print the error traceback
         traceback.print_exc()
+
+        # Prepare an error message
         error_message = f"An error occurred in create_dir_if_missing: {e}"
+
+        # Show the error message in a pop-up
         messagebox.showerror("Error", error_message)
 
 def save_file(dataframe, file_name, destination_folder="data/results"):
@@ -72,17 +92,36 @@ def save_file(dataframe, file_name, destination_folder="data/results"):
             messagebox.showerror("Error", "Invalid DataFrame. Please provide a valid pandas DataFrame.")
             return None
 
-        base_path = get_executable_dir() #gets the path of the currently running script or executable file
-        
-        complete_destination_folder = os.path.join(base_path, destination_folder) # create the path for the destination folder being saved to by adding the folder name onto the path of the currently running script or executable file
-        create_dir_if_missing(complete_destination_folder)
-        
-        file_path = os.path.join(complete_destination_folder, file_name) #add the file name onto the path of the destination folder
+        file_path = calculate_full_destination_path(file_name, destination_folder)
+        create_dir_if_missing(file_path)
         dataframe.to_excel(file_path, index=False) #saves the dataframe as an excel file. index=false means the index of each row in the database will not be added in a seperate column
         return file_path
     except Exception as e:
         traceback.print_exc()
         error_message = f"An error occurred in save_file: {e}"
+        messagebox.showerror("Error", error_message)
+        return None
+
+def calculate_full_destination_path(file_name, destination_folder):
+    """
+    Calculates the correct file path depending on whether script is being run by python
+    or as an executable
+    """
+    try:
+        base_path = get_executable_dir() # Get the path of the currently running script or executable file
+        complete_destination_folder = os.path.join(base_path, destination_folder)
+        has_file_name = bool(file_name) # Check if file_name has been passed in
+
+        # If there is a file name, append it to the folder path
+        if has_file_name:
+            file_path = os.path.join(complete_destination_folder, file_name)
+        else:
+            file_path = complete_destination_folder
+
+        return file_path
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in calculate_full_destination_path: {e}"
         messagebox.showerror("Error", error_message)
         return None
     

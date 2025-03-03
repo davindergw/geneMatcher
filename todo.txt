@@ -3,6 +3,7 @@
 - Add a clickable link for the results file
 - Implement donations reminder
     + If not number_of_uses.txt, create it 
+        - create_file_if_no needs to do base path checks inside the function to keep code dry
 - Get working with open office
 - Setup installer
 
