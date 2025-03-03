@@ -115,6 +115,7 @@ def process_file():
 
         # Step 3: Save the generated document to the "results" folder
         savedResultsFile = save_file(resultFile, 'results.xlsx', destination_folder="data/results")
+        print('savedResultsFile', savedResultsFile)
     
     except Exception as e:
         traceback.print_exc()
