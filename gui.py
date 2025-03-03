@@ -89,6 +89,7 @@ def track_uses():
     and saving the results to the specified folder.
     """
     try:
+        random_variable = True
         
     except Exception as e:
         traceback.print_exc()
@@ -106,14 +107,14 @@ def process_file():
             messagebox.showwarning("No File", "Please select a file before submitting.")
             return
         clear_files()
-        # Step 1: Copy the selected file to the "data" folder
-        dataFile = copy_file(source_file_path, "data")
+        # Step 1: Copy the selected file to the "imput" folder
+        dataFile = copy_file(source_file_path, "data/input")
 
         # Step 2: Generate a data frame using the copied file
         resultFile = generate_document(source_file_path)
 
         # Step 3: Save the generated document to the "results" folder
-        savedResultsFile = save_file(resultFile, 'results.xlsx', destination_folder="results")
+        savedResultsFile = save_file(resultFile, 'results.xlsx', destination_folder="data/results")
     
     except Exception as e:
         traceback.print_exc()

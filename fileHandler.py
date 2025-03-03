@@ -61,7 +61,7 @@ def create_dir_if_missing(folder_path):
         error_message = f"An error occurred in create_dir_if_missing: {e}"
         messagebox.showerror("Error", error_message)
 
-def save_file(dataframe, file_name, destination_folder="results"):
+def save_file(dataframe, file_name, destination_folder="data/results"):
     """
     Saves a pandas DataFrame to an Excel file in the specified destination folder.
     If the folder does not exist, it is created.
@@ -86,7 +86,7 @@ def save_file(dataframe, file_name, destination_folder="results"):
         messagebox.showerror("Error", error_message)
         return None
     
-def clear_files(folders=["results", "data"]):
+def clear_files(folders=["data/input", "data/results"]):
     """
     Clears all files in the specified folders.
     If a folder exists, deletes all regular files inside it.
