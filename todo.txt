@@ -1,0 +1,7 @@
+- reorginise data inside data folder
+- figure out how to get git to ignore data files
+- Add a clickable link for the results file
+- Implement donations reminder
+- Get working with open office
+- Setup installer
+
