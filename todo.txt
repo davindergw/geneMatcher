@@ -1,6 +1,10 @@
-- reorginise data inside data folder
-- figure out how to get git to ignore data files 
+- Bug Fix: buttons resizing
+    + Check what fixed it last time
 - Add a clickable link for the results file
+    + Open file link not working
+        * Need to actually open the file using os on line 182
+    + Make font for open file button the same size as for the other buttons
+- figure out how to get git to ignore data files 
 - Implement donations reminder
     + If not number_of_uses.txt, create it 
         - create_file_if_no needs to do base path checks inside the function to keep code dry

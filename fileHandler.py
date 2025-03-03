@@ -118,6 +118,8 @@ def calculate_full_destination_path(file_name, destination_folder):
         else:
             file_path = complete_destination_folder
 
+        file_path = os.path.normpath(file_path) #makes sure the use of slashes in the file path is consistent
+        
         return file_path
     except Exception as e:
         traceback.print_exc()

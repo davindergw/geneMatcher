@@ -75,8 +75,8 @@ def submit():
         - Display a donation request if uses are a multiple of 50
     """
     try:
-        process_file()
         track_uses()
+        results_file = process_file()
     
     except Exception as e:
         traceback.print_exc()
@@ -115,7 +115,10 @@ def process_file():
 
         # Step 3: Save the generated document to the "results" folder
         savedResultsFile = save_file(resultFile, 'results.xlsx', destination_folder="data/results")
-        print('savedResultsFile', savedResultsFile)
+        
+        # Display a clickable link to open the file
+        if savedResultsFile:
+            results_button.config(state="normal")  # Stops button from being hidden
     
     except Exception as e:
         traceback.print_exc()
@@ -169,6 +172,17 @@ def setup_gui():
         )
         status_label.grid(row=5, column=1, pady=10, sticky="nsew")  # Place label in third row, center column
 
+        # button for viewing the results file
+        global results_button
+        results_button = tk.Button(
+            master=root_window,
+            text="Open Results File",
+            fg="red",
+            state="disabled",  # Initially disabled
+            command=lambda: open_file(savedResultsFile)  # Opens file when clicked
+        )
+        results_button.grid(row=6, column=1, pady=10, sticky="nsew")  # Position it below the status label
+        
         # the adjust_font function will be called every time the configure event occurs. The configure event occurs every time the window resizes
         root_window.bind("<Configure>", adjust_font)
 
