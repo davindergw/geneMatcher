@@ -89,7 +89,7 @@ def track_uses():
     and saving the results to the specified folder.
     """
     try:
-        random_variable = True
+        test_variable = True
         
     except Exception as e:
         traceback.print_exc()
