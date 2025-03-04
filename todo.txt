@@ -1,9 +1,4 @@
-- Bug Fix: buttons resizing
-    + Check what fixed it last time
-- Add a clickable link for the results file
-    + Open file link not working
-        * Need to actually open the file using os on line 182
-    + Make font for open file button the same size as for the other buttons
+- Bug Fix:Needs to work with strings and numbers
 - figure out how to get git to ignore data files 
 - Implement donations reminder
     + If not number_of_uses.txt, create it 

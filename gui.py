@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 import traceback
 from documentGenerator import generate_document
-from fileHandler import copy_file, clear_files, save_file
+from fileHandler import copy_file, clear_files, save_file, truncate_filename
 
 # Initialize a variable to store the file path
 source_file_path = None
@@ -33,6 +33,7 @@ def adjust_font(event=None):
             select_button.config(font=new_font)
             submit_button.config(font=new_font)
             status_label.config(font=new_font)
+            results_button.config(font=new_font)
 
     except Exception as e:
         traceback.print_exc()
@@ -55,7 +56,8 @@ def select_file():
 
         if source_file_path:
             file_name = os.path.basename(source_file_path) #gets the filename on the end of the file path
-            status_label.config(text=f"Selected: {file_name}")
+            file_name_truncated = truncate_filename(file_name)
+            status_label.config(text=f"Selected: {file_name_truncated}")
         else:
             status_label.config(text="No file selected")
 
@@ -77,6 +79,7 @@ def submit():
     try:
         track_uses()
         results_file = process_file()
+        display_results_file_link(results_file)
     
     except Exception as e:
         traceback.print_exc()
@@ -118,11 +121,32 @@ def process_file():
         
         # Display a clickable link to open the file
         if savedResultsFile:
-            results_button.config(state="normal")  # Stops button from being hidden
+            results_button.config(
+                state="normal",  # Enable the button
+                command=lambda: os.startfile(savedResultsFile)  # Open the file
+            )
+            results_button.grid() 
+
+        return savedResultsFile
     
     except Exception as e:
         traceback.print_exc()
         error_message = f"An error occurred in process_file: {e}"
+        messagebox.showerror("Error", error_message)
+
+def display_results_file_link(results_file):
+    """
+    """
+    try:
+        results_button.config(
+            state="normal",  # Enable the button
+            command=lambda: os.startfile(results_file)  # Open the file
+        )
+        results_button.grid() 
+    
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in display_results_file_link: {e}"
         messagebox.showerror("Error", error_message)
 
 def setup_gui():
@@ -166,9 +190,10 @@ def setup_gui():
         status_label = tk.Label(
             master=root_window,
             text="No file selected",
-            fg="gray",  # Text colour
-            anchor="w",  # Align text to the left
-            wraplength=350  # Prevent text from expanding the window (if the window expands this will cause the buttons to resize)
+            fg="gray",
+            anchor="center",
+            justify="center",  # Ensures multi-line text is centered
+            wraplength=200  # Prevent text from expanding the window (if the window expands this will cause the buttons to resize)
         )
         status_label.grid(row=5, column=1, pady=10, sticky="nsew")  # Place label in third row, center column
 
@@ -177,12 +202,12 @@ def setup_gui():
         results_button = tk.Button(
             master=root_window,
             text="Open Results File",
-            fg="red",
             state="disabled",  # Initially disabled
-            command=lambda: open_file(savedResultsFile)  # Opens file when clicked
+            command=lambda: os.startfile(savedResultsFile)  # Opens file when clicked
         )
         results_button.grid(row=6, column=1, pady=10, sticky="nsew")  # Position it below the status label
-        
+        results_button.grid_remove()  # Hide the button initially
+
         # the adjust_font function will be called every time the configure event occurs. The configure event occurs every time the window resizes
         root_window.bind("<Configure>", adjust_font)
 

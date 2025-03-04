@@ -148,3 +148,8 @@ def clear_files(folders=["data/input", "data/results"]):
         error_message = f"An error occurred in clear_files: {e}"
         messagebox.showerror("Error", error_message)
 
+def truncate_filename(filename, max_length=20):
+    """ Truncates the filename and adds '...' if it is too long. """
+    if len(filename) > max_length:
+        return filename[:max_length - 3] + "..."  # :X allows you to slice the first x characters of a string. - 3 is used to take account of the ... apended to the end of the filename
+    return filename
