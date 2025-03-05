@@ -47,3 +47,17 @@ def increment_number_in_file(file_path):
         traceback.print_exc()
         messagebox.showerror("Error", f"An error occurred in increment_number_in_file: {e}")
         return None
+
+def track_uses():
+    """
+    Increments the number in the numberOfUses file
+    """
+    try:
+        numberOfUses_file_path = "data/user/numberOfUses.txt"
+        numberOfUses = increment_number_in_file(numberOfUses_file_path)
+        return numberOfUses
+        
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in track_uses: {e}"
+        messagebox.showerror("Error", error_message)

@@ -1,4 +1,9 @@
 - Implement donations reminder
+    + wrap text
+    + Link needs fixing
+    + Maybe later button on pop up reminder
+    + Donation button on main app
+    + Change number of uses to 50
     + If not number_of_uses.txt, create it 
         - create_file_if_no needs to do base path checks inside the function to keep code dry
 - Get working with open office

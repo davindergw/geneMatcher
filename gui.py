@@ -3,9 +3,10 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 import traceback
+import webbrowser
 from documentGenerator import generate_document
 from fileHandler import copy_file, clear_files, save_file, truncate_filename
-from userDataHandler import increment_number_in_file
+from userDataHandler import track_uses
 
 # Initialize a variable to store the file path
 source_file_path = None
@@ -78,8 +79,12 @@ def submit():
         - Display a donation request if uses are a multiple of 50
     """
     try:
-        track_uses()
+        numberOfUses = track_uses()
         results_file = process_file()
+
+        if numberOfUses % 2 == 0:
+            display_donation_reminder(numberOfUses)
+
         display_results_file_link(results_file)
     
     except Exception as e:
@@ -87,19 +92,6 @@ def submit():
         error_message = f"An error occurred in submit: {e}"
         messagebox.showerror("Error", error_message)
 
-def track_uses():
-    """
-    Process the selected file by copying it, generating a document from it, 
-    and saving the results to the specified folder.
-    """
-    try:
-        numberOfUses_file_path = "data/user/numberOfUses.txt"
-        increment_number_in_file(numberOfUses_file_path)
-        
-    except Exception as e:
-        traceback.print_exc()
-        error_message = f"An error occurred in track_uses: {e}"
-        messagebox.showerror("Error", error_message)
 
 
 def process_file():
@@ -134,6 +126,42 @@ def process_file():
     except Exception as e:
         traceback.print_exc()
         error_message = f"An error occurred in process_file: {e}"
+        messagebox.showerror("Error", error_message)
+
+def display_donation_reminder(numberOfUses):
+    """
+    Displays a pop up telling the user how many times they have use the app
+    and reminding them to consider donating
+    """
+    try:
+        popup = tk.Toplevel()
+        popup.title("Please Consider Donating")
+        popup.geometry("300x150")
+
+        label = tk.Label(
+            popup, 
+            text=f"You have used Gene Matcher {numberOfUses} times!\n\n"
+                 "Please consider supporting the creator through Buy Me a Coffee.",
+            font=("Arial", 12),
+            bg="#ffcc00",  
+            fg="black",
+            wraplength=280,
+            justify="center"
+        )
+        label.pack(pady=5)
+
+        # Button to open donation link
+        donate_button = tk.Button(popup, text="Donate Now", fg="blue", cursor="hand2",
+                                  command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()])
+        donate_button.pack(pady=5)
+
+        # "Maybe Later" button just closes the pop-up
+        maybe_later_button = tk.Button(popup, text="Maybe Later", command=popup.destroy)
+        maybe_later_button.pack(pady=5)
+    
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in display_donation_reminder: {e}"
         messagebox.showerror("Error", error_message)
 
 def display_results_file_link(results_file):
@@ -209,6 +237,17 @@ def setup_gui():
         )
         results_button.grid(row=6, column=1, pady=10, sticky="nsew")  # Position it below the status label
         results_button.grid_remove()  # Hide the button initially
+
+        donate_button = tk.Button(
+            master=root_window,
+            text="Support the Developer 💖", 
+            font=("Arial", 12, "bold"),   
+            bg="#ffd966",  
+            fg="black",   
+            cursor="hand2",
+            command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()]
+        )
+        donate_button.grid(row=7, column=1, pady=10, sticky="nsew")
 
         # the adjust_font function will be called every time the configure event occurs. The configure event occurs every time the window resizes
         root_window.bind("<Configure>", adjust_font)
