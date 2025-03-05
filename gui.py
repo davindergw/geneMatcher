@@ -5,6 +5,7 @@ from tkinter import messagebox
 import traceback
 from documentGenerator import generate_document
 from fileHandler import copy_file, clear_files, save_file, truncate_filename
+from userDataHandler import increment_number_in_file
 
 # Initialize a variable to store the file path
 source_file_path = None
@@ -92,7 +93,8 @@ def track_uses():
     and saving the results to the specified folder.
     """
     try:
-        test_variable = True
+        numberOfUses_file_path = "data/user/numberOfUses.txt"
+        increment_number_in_file(numberOfUses_file_path)
         
     except Exception as e:
         traceback.print_exc()

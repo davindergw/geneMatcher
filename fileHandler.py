@@ -32,10 +32,6 @@ def copy_file(source_path, destination_folder):
         if not source_path:
             messagebox.showwarning("No File", "Please select an Excel file before submitting.")
             return None
-
-        base_path = get_executable_dir() #function retrieves the path of the currently running script or executable file
-        if base_path is None:
-            return None
         
         file_name = os.path.basename(source_path)
         destination_path = calculate_full_destination_path(file_name, destination_folder)
