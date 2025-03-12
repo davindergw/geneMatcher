@@ -82,7 +82,7 @@ def submit():
         numberOfUses = track_uses()
         results_file = process_file()
 
-        if numberOfUses % 2 == 0:
+        if numberOfUses % 50 == 0:
             display_donation_reminder(numberOfUses)
 
         display_results_file_link(results_file)
@@ -134,16 +134,31 @@ def display_donation_reminder(numberOfUses):
     and reminding them to consider donating
     """
     try:
-        popup = tk.Toplevel()
+        popup = tk.Toplevel(root_window)
         popup.title("Please Consider Donating")
-        popup.geometry("300x150")
+
+        # Get the size of the main window
+        root_x = root_window.winfo_x()
+        root_y = root_window.winfo_y()
+        root_width = root_window.winfo_width()
+        root_height = root_window.winfo_height()
+
+        # Set pop-up size
+        popup_width = 300
+        popup_height = 150
+
+        # Calculate position (center of root_window)
+        pos_x = root_x + (root_width // 2) - (popup_width // 2)
+        pos_y = root_y + (root_height // 2) - (popup_height // 2)
+
+        # Apply calculated position
+        popup.geometry(f"{popup_width}x{popup_height}+{pos_x}+{pos_y}")
 
         label = tk.Label(
-            popup, 
+            popup,
             text=f"You have used Gene Matcher {numberOfUses} times!\n\n"
-                 "Please consider supporting the creator through Buy Me a Coffee.",
+                 "Please consider supporting the creator through the wesbsite Buy Me a Coffee.",
             font=("Arial", 12),
-            bg="#ffcc00",  
             fg="black",
             wraplength=280,
             justify="center"
@@ -151,8 +166,13 @@ def display_donation_reminder(numberOfUses):
         label.pack(pady=5)
 
         # Button to open donation link
-        donate_button = tk.Button(popup, text="Donate Now", fg="blue", cursor="hand2",
-                                  command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()])
+        donate_button = tk.Button(
+            popup,
+            text="Donate Now",
+            bg="#ffd966",
+            cursor="hand2",
+            command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()]
+        )
         donate_button.pack(pady=5)
 
         # "Maybe Later" button just closes the pop-up

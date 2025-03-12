@@ -1,15 +1,12 @@
 import os
 import traceback
 from tkinter import messagebox
-from fileHandler import calculate_full_destination_path
+from fileHandler import calculate_full_destination_path, calculate_full_file_path, create_file_if_missing
 
 def read_number_from_file(file_path):
     """Reads a number from a text file. Returns 0 if the file does not exist or is empty."""
     try:
         full_file_path = calculate_full_destination_path(None, file_path)
-        
-        if not os.path.exists(full_file_path):
-            return 0  # Default to 0 if the file does not exist
 
         with open(full_file_path, "r") as file: #open file in read mode. with ensures file is closed properly, even if an error occurs
             content = file.read().strip()
@@ -54,6 +51,8 @@ def track_uses():
     """
     try:
         numberOfUses_file_path = "data/user/numberOfUses.txt"
+        new_file_created = create_file_if_missing(numberOfUses_file_path)
+        numberOfUses_full_file_path = numberOfUses_file_path(numberOfUses_file_path)
         numberOfUses = increment_number_in_file(numberOfUses_file_path)
         return numberOfUses
         

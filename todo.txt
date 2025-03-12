@@ -1,11 +1,7 @@
 - Implement donations reminder
-    + wrap text
-    + Link needs fixing
-    + Maybe later button on pop up reminder
-    + Donation button on main app
-    + Change number of uses to 50
-    + If not number_of_uses.txt, create it 
-        - create_file_if_no needs to do base path checks inside the function to keep code dry
+      File "C:\Users\HP\Documents\GitHub\geneMatcher\userDataHandler.py", line 55, in track_uses
+    numberOfUses_full_file_path = numberOfUses_file_path(numberOfUses_file_path)
+TypeError: 'str' object is not callable
 - Get working with open office
 - Setup installer
 

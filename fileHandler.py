@@ -44,6 +44,33 @@ def copy_file(source_path, destination_folder):
         messagebox.showerror("Error", error_message)
         return None
 
+def create_file_if_missing(file_path):
+    """
+    Ensures the folder for the given file or folder path exists.
+    - If `file_path` is a file, it creates the parent folder.
+    - If `file_path` is a folder, it ensures the folder exists.
+    """
+    try:
+        new_file_created = False
+        complete_file_path = calculate_full_file_path(file_path)
+        
+        # Check if the file exists
+        file_exists = os.path.exists(complete_file_path)
+        
+        # Create the folder if it does not exist
+        if not file_exists:
+            with open(complete_file_path, 'w') as f: # When a file is opened using with it will automatically be saved when the with block finishes
+                pass  #pass does nothing but is used when python requires a block to not be empty
+            new_file_created = True
+        
+        return new_file_created
+        
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in create_file_if_missing: {e}"
+        messagebox.showerror("Error", error_message)
+
+
 def create_dir_if_missing(file_path):
     """
     Ensures the folder for the given file or folder path exists.
@@ -68,13 +95,8 @@ def create_dir_if_missing(file_path):
             os.makedirs(folder_path)
 
     except Exception as e:
-        # Print the error traceback
         traceback.print_exc()
-
-        # Prepare an error message
         error_message = f"An error occurred in create_dir_if_missing: {e}"
-
-        # Show the error message in a pop-up
         messagebox.showerror("Error", error_message)
 
 def save_file(dataframe, file_name, destination_folder="data/results"):
@@ -100,7 +122,7 @@ def save_file(dataframe, file_name, destination_folder="data/results"):
 
 def calculate_full_destination_path(file_name, destination_folder):
     """
-    Calculates the correct file path depending on whether script is being run by python
+    Calculates the correct file path dependizng on whether script is being run by python
     or as an executable
     """
     try:
@@ -120,6 +142,22 @@ def calculate_full_destination_path(file_name, destination_folder):
     except Exception as e:
         traceback.print_exc()
         error_message = f"An error occurred in calculate_full_destination_path: {e}"
+        messagebox.showerror("Error", error_message)
+        return None
+
+def calculate_full_file_path(file_path):
+    """
+    Calculates the correct file path depending on whether script is being run by python
+    or as an executable
+    """
+    try:
+        base_path = get_executable_dir() # Get the path of the currently running script or executable file
+        complete_file_path = os.path.join(base_path, file_path)
+        complete_file_path_cleaned = os.path.normpath(complete_file_path) #makes sure the use of slashes in the file path is consistent
+        return complete_file_path_cleaned
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in calculate_full_file_path: {e}"
         messagebox.showerror("Error", error_message)
         return None
     
