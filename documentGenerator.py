@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import traceback
 from tkinter import messagebox
+import copy
 
 import pandas as pd
 import traceback
@@ -53,7 +54,9 @@ def clean_dataframe_to_integers(dataframe):
 
 def format_cell(value):
     """
-    Cleans the value of a cell so it is formatted correctly
+    Cleans the value of a cell so it is formatted correctly:
+
+        - Converts any numerical value to a string
     """
     try:
         if isinstance(value, (int, float)):  # Ensure value is numeric
@@ -70,7 +73,8 @@ def format_cell(value):
 
 def read_and_clean_column(df, column_name):
     """
-    Extracts and cleans column data from an excel file
+    Extracts and cleans column data from an excel file:
+        Removes empty cells
     """
     try:
         column_series = df[column_name] # returns a panda series, which is an array like data structure
@@ -155,16 +159,17 @@ def find_positions(dataframe, column_name, matching_string):
         error_message = f"Error in find_positions: {e}"
         messagebox.showerror("Error", error_message)
 
-def populate_positions(dataframe, matching_strings_positions):
+def populate_positions(dataframe, matching_strings_positions_empty):
     """
     Populates the positions of matching strings in both columns.
     """
     try:
-        for obj in matching_strings_positions:
+        matching_strings_positions_copy = copy.deepcopy(matching_strings_positions_empty) #Stos matching_strings_positions_empty from being altered
+        for obj in matching_strings_positions_copy:
             obj["Column 1"] = find_positions(dataframe, "Set 1", obj["Gene"])
             obj["Column 2"] = find_positions(dataframe, "Set 2", obj["Gene"])
 
-        return matching_strings_positions
+        return matching_strings_positions_copy
     except Exception as e:
         traceback.print_exc()
         error_message = f"Error in populate_positions: {e}"
@@ -188,9 +193,9 @@ def default_document_generation(source_file_path):
     containing matching strings and their positions.
     """
     try:
+        
+        print('=================================================')
         debug = False
-
-        # What if a spreadsheet of numbers has a missing cell in both rows - will these cells be converted into 0 and be matched?
 
         df_to_analyse = pd.read_excel(source_file_path) #converts an excel file into a dataframe
         df_to_analyse = rename_columns(df_to_analyse)
@@ -202,8 +207,6 @@ def default_document_generation(source_file_path):
         matching_strings_positions_populated = populate_positions(df_to_analyse, matching_strings_positions_empty)
         matching_strings_df = convert_to_dataframe(matching_strings_positions_populated)
 
-        print('=================================================')
-
         if debug:
             print('df_to_analyse\n', df_to_analyse, '\n')
             print('COLUMN 1\n', column1_strings, '\n')
@@ -213,6 +216,7 @@ def default_document_generation(source_file_path):
             print('matching_strings_positions_populated\n', matching_strings_positions_populated, '\n')
             print('matching_strings_df\n', matching_strings_df)
         else:
+            pass
             print('\n Matching Genes:')
             print('\n', matching_strings_df)
         return matching_strings_df

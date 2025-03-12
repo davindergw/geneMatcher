@@ -79,11 +79,11 @@ def submit():
         - Display a donation request if uses are a multiple of 50
     """
     try:
-        numberOfUses = track_uses()
+        # numberOfUses = track_uses()
         results_file = process_file()
 
-        if numberOfUses % 50 == 0:
-            display_donation_reminder(numberOfUses)
+        # if numberOfUses % 50 == 0:
+            # display_donation_reminder(numberOfUses)
 
         display_results_file_link(results_file)
     
