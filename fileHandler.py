@@ -2,8 +2,8 @@ import os
 import shutil
 import traceback
 import sys
-from tkinter import messagebox  # Importing messagebox for showing warnings and error dialogs in GUI
-import pandas as pd  # Importing pandas for dataframe operations
+from tkinter import messagebox  
+import pandas as pd  
 
 def get_executable_dir():
     """
@@ -14,12 +14,12 @@ def get_executable_dir():
     try:
         frozen = getattr(sys, 'frozen', False) #If an executable is running the system will be frozen. If the system attribute 'frozen' is true, the function returns true. If not it will return the default value, which has here been set to false
         if frozen:
-            return os.path.dirname(sys.executable) #returns the path of the  directory in which the currently running executabl
-        return os.path.dirname(os.path.realpath(__file__))# realpath returns the absolute path for the currently running script, as if this is not used _file_ sometimes shows the relative path
+            return os.path.dirname(sys.executable) #returns the path of the  directory in which the currently running executable is stored
+        return os.path.dirname(os.path.realpath(__file__))# realpath returns the absolute path for the currently running script (_file_ sometimes shows the relative path)
     except Exception as e:
-        traceback.print_exc() # prints the stack trace o the error on the console
+        traceback.print_exc() # prints the stack trace of the error on the console
         error_message = f"An error occurred in get_executable_dir: {e}" #An f string allows you to insert variables into the string
-        messagebox.showerror("Error", error_message) # displays the error in a notification box
+        messagebox.showerror("Error", error_message) 
         return None
 
 def copy_file(source_path, destination_folder):
@@ -46,9 +46,7 @@ def copy_file(source_path, destination_folder):
 
 def create_file_if_missing(file_path):
     """
-    Ensures the folder for the given file or folder path exists.
-    - If `file_path` is a file, it creates the parent folder.
-    - If `file_path` is a folder, it ensures the folder exists.
+    If the file path passed into the function does not exist, it is created
     """
     try:
         new_file_created = False
@@ -57,7 +55,7 @@ def create_file_if_missing(file_path):
         # Check if the file exists
         file_exists = os.path.exists(complete_file_path)
         
-        # Create the folder if it does not exist
+        # Create the file if it does not exist
         if not file_exists:
             with open(complete_file_path, 'w') as f: # When a file is opened using with it will automatically be saved when the with block finishes
                 pass  #pass does nothing but is used when python requires a block to not be empty
@@ -74,11 +72,10 @@ def create_file_if_missing(file_path):
 def create_dir_if_missing(file_path):
     """
     Ensures the folder for the given file or folder path exists.
-    - If `file_path` is a file, it creates the parent folder.
+    - If `file_path` is a file, it creates the parent folder if it does not exist.
     - If `file_path` is a folder, it ensures the folder exists.
     """
     try:
-        # Check if the given path is a folder
         is_folder = os.path.isdir(file_path)
         
         # Determine the folder path to check
@@ -87,10 +84,8 @@ def create_dir_if_missing(file_path):
         else:
             folder_path = os.path.dirname(file_path)
         
-        # Check if the folder exists
         folder_exists = os.path.exists(folder_path)
         
-        # Create the folder if it does not exist
         if not folder_exists:
             os.makedirs(folder_path)
 
@@ -101,9 +96,9 @@ def create_dir_if_missing(file_path):
 
 def save_file(dataframe, file_name, destination_folder="data/results"):
     """
-    Saves a pandas DataFrame to an Excel file in the specified destination folder.
-    If the folder does not exist, it is created.
-    Returns the file path of the saved file or None in case of an error.
+    Saves a pandas DataFrame to an Excel file in the specified destination folder:
+     - If the folder does not exist, it is created.
+     - Returns the file path of the saved file or None in case of an error.
     """
     try:
         if not isinstance(dataframe, pd.DataFrame):
@@ -183,7 +178,32 @@ def clear_files(folders=["data/input", "data/results"]):
         messagebox.showerror("Error", error_message)
 
 def truncate_filename(filename, max_length=20):
-    """ Truncates the filename and adds '...' if it is too long. """
-    if len(filename) > max_length:
-        return filename[:max_length - 3] + "..."  # :X allows you to slice the first x characters of a string. - 3 is used to take account of the ... apended to the end of the filename
-    return filename
+    """
+    Truncates the filename and adds '...' if it exceeds the max length.
+    """
+    try:
+        if len(filename) > max_length:
+            truncated_filename = filename[:max_length - 3] + "..."
+
+            return truncated_filename
+
+        return filename
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"Error in truncate_filename: {e}"
+        messagebox.showerror("Error", error_message)
+
+def get_file_extension(file_path):
+    """
+    Returns the lowercase file extension of a given file path.
+    """
+    try:
+        file_name, file_extension = os.path.splitext(file_path) #split text returns a tuple containing the filename and its extension
+
+        file_extension = file_extension.lower()
+
+        return file_extension
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"Error in get_file_extension: {e}"
+        messagebox.showerror("Error", error_message)

@@ -5,15 +5,12 @@ from tkinter import messagebox
 import traceback
 import webbrowser
 from documentGenerator import generate_document
-from fileHandler import copy_file, clear_files, save_file, truncate_filename
+from fileHandler import copy_file, clear_files, save_file, truncate_filename, get_file_extension
 from userDataHandler import track_uses
 
-# Initialize a variable to store the file path
+# Global variables
 source_file_path = None
 status_label = None
-status_label = None
-prev_width = None  #the width of a window before a change was made to the size of the app window
-window_width = None
 
 def adjust_font(event=None):
     """ 
@@ -26,15 +23,14 @@ def adjust_font(event=None):
 
         if root_window.winfo_exists():
             window_width = root_window.winfo_width()
-            new_size = window_width // width_factor
-            new_size = max(min_font_size, min(new_size, max_font_size))
-
+            new_size_initial = window_width // width_factor
+            new_size = max(min_font_size, min(new_size_initial, max_font_size))
             new_font = ("Arial", new_size)
 
-            # Apply the new font size to widgets
             select_button.config(font=new_font)
             submit_button.config(font=new_font)
             status_label.config(font=new_font)
+            contact_details.config(font=new_font)
             results_button.config(font=new_font)
 
     except Exception as e:
@@ -47,23 +43,23 @@ def select_file():
     The selected file's path is stored in the global variable 'source_file_path'.
     """
     try:
-        global source_file_path # the global keyword needs to be used so that the global variable defined out of the function can be modified
+        global source_file_path # the global keyword makes sure the variable refers to the global variable already created, rather than having a new local variable created
         global status_label
 
         filetypes = [
-            ("Excel files", "*.xls *.xlsx") #first element is a description of the file type. The next element is a list of permitted file types
+            ("Spreadsheet files", "*.xls *.xlsx *.ods") #first element is a description of the file type. The next element is a list of permitted file types
         ]
         
-        source_file_path = filedialog.askopenfilename(filetypes=filetypes) # Opens the file dialog for the user to select a file. Once the user has selected a file, the file path is returned
+        source_file_path = filedialog.askopenfilename(filetypes=filetypes) # Opens the file dialog for the user to select a file and blocks the program execution. Once the user has selected a file, the file path is returned
 
         if source_file_path:
             file_name = os.path.basename(source_file_path) #gets the filename on the end of the file path
             file_name_truncated = truncate_filename(file_name)
-            status_label.config(text=f"Selected: {file_name_truncated}")
+            status_label.config(text=f"Selected: {file_name_truncated}") #f strings allow you to insert variables into strings
         else:
             status_label.config(text="No file selected")
 
-        # Force Tkinter to refresh layout after file dialog closes
+        # Force Tkinter to refresh layout after file dialog closes (needed to fix a bug)
         root_window.update_idletasks() 
     except Exception as e:
         traceback.print_exc()
@@ -79,11 +75,11 @@ def submit():
         - Display a donation request if uses are a multiple of 50
     """
     try:
-        # numberOfUses = track_uses()
+        numberOfUses = track_uses()
         results_file = process_file()
 
-        # if numberOfUses % 50 == 0:
-            # display_donation_reminder(numberOfUses)
+        if numberOfUses % 50 == 0:
+            display_donation_reminder(numberOfUses)
 
         display_results_file_link(results_file)
     
@@ -103,15 +99,13 @@ def process_file():
         if not source_file_path: # global keyword is not needed as the global variable is not being modified
             messagebox.showwarning("No File", "Please select a file before submitting.")
             return
-        clear_files()
-        # Step 1: Copy the selected file to the "imput" folder
+        clear_files() #Clear old files from the folders
         dataFile = copy_file(source_file_path, "data/input")
-
-        # Step 2: Generate a data frame using the copied file
-        resultFile = generate_document(source_file_path)
-
-        # Step 3: Save the generated document to the "results" folder
-        savedResultsFile = save_file(resultFile, 'results.xlsx', destination_folder="data/results")
+        resultFile = generate_document(source_file_path) # Generate a data frame using the copied file
+        
+        # Saving the file
+        file_extension = get_file_extension(source_file_path)
+        savedResultsFile = save_file(resultFile, f'results{file_extension}', destination_folder="data/results")
         
         # Display a clickable link to open the file
         if savedResultsFile:
@@ -130,24 +124,23 @@ def process_file():
 
 def display_donation_reminder(numberOfUses):
     """
-    Displays a pop up telling the user how many times they have use the app
+    Displays a pop up telling the user how many times they have used the app
     and reminding them to consider donating
     """
     try:
         popup = tk.Toplevel(root_window)
         popup.title("Please Consider Donating")
 
-        # Get the size of the main window
+        # Get the dimensions of the main window
         root_x = root_window.winfo_x()
         root_y = root_window.winfo_y()
         root_width = root_window.winfo_width()
         root_height = root_window.winfo_height()
 
-        # Set pop-up size
         popup_width = 300
         popup_height = 150
 
-        # Calculate position (center of root_window)
+        # Calculate the position at centre of main window
         pos_x = root_x + (root_width // 2) - (popup_width // 2)
         pos_y = root_y + (root_height // 2) - (popup_height // 2)
 
@@ -157,7 +150,7 @@ def display_donation_reminder(numberOfUses):
         label = tk.Label(
             popup,
             text=f"You have used Gene Matcher {numberOfUses} times!\n\n"
-                 "Please consider supporting the creator through the wesbsite Buy Me a Coffee.",
+                 "Please consider supporting the creator through the website 'Buy Me a Coffee'.",
             font=("Arial", 12),
             fg="black",
             wraplength=280,
@@ -171,11 +164,11 @@ def display_donation_reminder(numberOfUses):
             text="Donate Now",
             bg="#ffd966",
             cursor="hand2",
-            command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()]
+            command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()] #lambada lets you define anonymous funcitons
         )
         donate_button.pack(pady=5)
 
-        # "Maybe Later" button just closes the pop-up
+        # "Maybe Later" button
         maybe_later_button = tk.Button(popup, text="Maybe Later", command=popup.destroy)
         maybe_later_button.pack(pady=5)
     
@@ -186,6 +179,7 @@ def display_donation_reminder(numberOfUses):
 
 def display_results_file_link(results_file):
     """
+    Dispays the button to see the results file
     """
     try:
         results_button.config(
@@ -201,11 +195,12 @@ def display_results_file_link(results_file):
 
 def setup_gui():
     """
-    Set up the main window, create and arrange the widgets using grid,
-    and run the Tkinter event loop for the GUI.
+    - Sets up the main window
+    - Creates and arrange the widgets
+    - Runs the event loop
     """
     try:
-        global select_button, submit_button, status_label, root_window  # Needed for adjust_font function
+        global select_button, submit_button, status_label, contact_details, root_window  # Needed for adjust_font function
 
         root_window = tk.Tk()  # The main window
         root_window.title("Gene Matcher")
@@ -234,7 +229,7 @@ def setup_gui():
             command=submit,
             width=15
         )
-        submit_button.grid(row=4, column=1, pady=10, sticky="nsew")  # Place button in second row, center column
+        submit_button.grid(row=4, column=1, pady=10, sticky="nsew") 
 
         # Status label
         status_label = tk.Label(
@@ -242,20 +237,20 @@ def setup_gui():
             text="No file selected",
             fg="gray",
             anchor="center",
-            justify="center",  # Ensures multi-line text is centered
+            justify="center",  # Ensures text is centered
             wraplength=200  # Prevent text from expanding the window (if the window expands this will cause the buttons to resize)
         )
-        status_label.grid(row=5, column=1, pady=10, sticky="nsew")  # Place label in third row, center column
+        status_label.grid(row=5, column=1, pady=10, sticky="nsew") 
 
         # button for viewing the results file
         global results_button
         results_button = tk.Button(
             master=root_window,
             text="Open Results File",
-            state="disabled",  # Initially disabled
+            state="disabled", 
             command=lambda: os.startfile(savedResultsFile)  # Opens file when clicked
         )
-        results_button.grid(row=6, column=1, pady=10, sticky="nsew")  # Position it below the status label
+        results_button.grid(row=6, column=1, pady=10, sticky="nsew")  
         results_button.grid_remove()  # Hide the button initially
 
         donate_button = tk.Button(
@@ -269,8 +264,18 @@ def setup_gui():
         )
         donate_button.grid(row=7, column=1, pady=10, sticky="nsew")
 
-        # the adjust_font function will be called every time the configure event occurs. The configure event occurs every time the window resizes
-        root_window.bind("<Configure>", adjust_font)
+        # Contact details information
+        contact_details = tk.Label(
+            master=root_window,
+            text="Contact the developer at: pythongenematcher@gmail.com",
+            fg="black",
+            anchor="center",
+            justify="center",   
+            wraplength=400  
+        )
+        contact_details.grid(row=8, column=1, pady=10, sticky="nsew") 
+ 
+        root_window.bind("<Configure>", adjust_font) # the adjust_font function will be called every time the configure event occurs. The configure event occurs every time the window resizes
 
         root_window.mainloop()  # Start the Tkinter event loop: An infinite loop that will check for events that have been triggered and redraw the GUI / carry out any function calls in accordance with any events that have occurred
     except Exception as e:

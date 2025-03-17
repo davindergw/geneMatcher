@@ -52,7 +52,7 @@ def track_uses():
     try:
         numberOfUses_file_path = "data/user/numberOfUses.txt"
         new_file_created = create_file_if_missing(numberOfUses_file_path)
-        numberOfUses_full_file_path = numberOfUses_file_path(numberOfUses_file_path)
+        numberOfUses_full_file_path = calculate_full_file_path(numberOfUses_file_path)
         numberOfUses = increment_number_in_file(numberOfUses_file_path)
         return numberOfUses
         

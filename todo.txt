@@ -1,7 +1,3 @@
-- Implement donations reminder
-      File "C:\Users\HP\Documents\GitHub\geneMatcher\userDataHandler.py", line 55, in track_uses
-    numberOfUses_full_file_path = numberOfUses_file_path(numberOfUses_file_path)
-TypeError: 'str' object is not callable
 - Get working with open office
 - Setup installer
 

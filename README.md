@@ -14,9 +14,10 @@
     - GeneMatcher is written in Python
     - To install the necessary dependencies:
         + Run the command 'pip install pandas openpyxl' from the root fodler
+        + Run the command 'pip install odfpy' from the root folder
+
     - The entry point file is gui.py, inside the root folder
     - To run the program run the command python gui.py in the root folder
     - To create a new executable file for the program run the command pyinstaller --onefile gui.py in the root folder
-    - Get the main version of documentGenerator: https://github.com/davindergw/geneMatcher/blob/main/documentGenerator.py
 
 

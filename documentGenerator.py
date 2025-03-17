@@ -4,20 +4,17 @@ import traceback
 from tkinter import messagebox
 import copy
 
-import pandas as pd
-import traceback
-from tkinter import messagebox
+from fileHandler import get_file_extension
 
 def rename_columns(dataframe):
     """
     Renames the first two columns of the dataframe to 'Set 1' and 'Set 2'.
-    Shows a warning and raises a ValueError if there are fewer than two columns.
     """
     try:
         column_names = dataframe.columns
         column_list = list(column_names)  # Convert to a list
-
         column_count = len(column_list)  # Get the number of columns
+
         if column_count < 2:
             messagebox.showwarning("Insufficient Columns", "The spreadsheet must contain at least two columns of data.")
             raise ValueError("The dataframe must contain at least two columns.") #Will trigger the exception block. Value error is used when the argument is the right data type, but has the wrong value
@@ -74,12 +71,14 @@ def format_cell(value):
 def read_and_clean_column(df, column_name):
     """
     Extracts and cleans column data from an excel file:
-        Removes empty cells
+        - Removes empty cells
+        - Converts numeric values to string
+        - Remove duplicate cells
     """
     try:
         column_series = df[column_name] # returns a panda series, which is an array like data structure
         cleaned_series = column_series.dropna() # removes empty cells from the series
-        string_series = cleaned_series.apply(format_cell) # 
+        string_series = cleaned_series.apply(format_cell) # Converts numeric values to string
         unique_values = string_series.unique() #removes duplicates
         column_list = list(unique_values) # puts the values into a list: an array like structure that is easier to manipulate than a normal array
 
@@ -116,17 +115,14 @@ def initialize_matching_strings_positions(matching_strings):
     """
     try:
         result = []
-        
-        # Iterate through each matching string
+
         for string in matching_strings:
-            # Create a dictionary to store the matching string and its positions. Note: a dictionary is a data structure in python that just stores key-value pairs. It is not an object, which in python are always instances of a class.
             matching_string_info = {
                 "Gene": string,
                 "Column 1": [],
                 "Column 2": []
             }
             
-            # Append the dictionary to the result list
             result.append(matching_string_info)
         
         return result
@@ -164,7 +160,7 @@ def populate_positions(dataframe, matching_strings_positions_empty):
     Populates the positions of matching strings in both columns.
     """
     try:
-        matching_strings_positions_copy = copy.deepcopy(matching_strings_positions_empty) #Stos matching_strings_positions_empty from being altered
+        matching_strings_positions_copy = copy.deepcopy(matching_strings_positions_empty) #Stops matching_strings_positions_empty from being altered
         for obj in matching_strings_positions_copy:
             obj["Column 1"] = find_positions(dataframe, "Set 1", obj["Gene"])
             obj["Column 2"] = find_positions(dataframe, "Set 2", obj["Gene"])
@@ -187,17 +183,24 @@ def convert_to_dataframe(matching_strings_positions):
         error_message = f"Error in convert_to_dataframe: {e}"
         messagebox.showerror("Error", error_message)
 
-def default_document_generation(source_file_path):
+def generate_document(source_file_path):
     """
     Processes the input file to identify matching strings and returns a DataFrame
     containing matching strings and their positions.
     """
     try:
-        
         print('=================================================')
         debug = False
+        # determine file extension
+        file_extension = get_file_extension(source_file_path)
 
-        df_to_analyse = pd.read_excel(source_file_path) #converts an excel file into a dataframe
+        if file_extension in [".xls", ".xlsx"]:
+            df_to_analyse = pd.read_excel(source_file_path)
+        elif file_extension == ".ods":
+            df_to_analyse = pd.read_excel(source_file_path, engine="odf")
+        else:
+            raise ValueError("Unsupported file format")
+
         df_to_analyse = rename_columns(df_to_analyse)
         df_to_analyse = clean_dataframe_to_integers(df_to_analyse)
         column1_strings = read_and_clean_column(df_to_analyse, "Set 1")
@@ -220,20 +223,6 @@ def default_document_generation(source_file_path):
             print('\n Matching Genes:')
             print('\n', matching_strings_df)
         return matching_strings_df
-    except Exception as e:
-        traceback.print_exc()
-        error_message = f"Error in default_document_generation: {e}"
-        messagebox.showerror("Error", error_message)
-
-def generate_document(source_file_path):
-    """
-    Processes the input file to identify matching strings and returns a DataFrame
-    containing matching strings and their positions.
-    """
-    try:
-        dataframe = default_document_generation(source_file_path)
-
-        return dataframe
     except Exception as e:
         traceback.print_exc()
         error_message = f"Error in generate_document: {e}"
