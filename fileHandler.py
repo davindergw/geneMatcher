@@ -4,6 +4,21 @@ import traceback
 import sys
 from tkinter import messagebox  
 import pandas as pd  
+"""
+FUNCTIONS
+
+def get_executable_dir
+def copy_file
+def create_file_if_missing
+def create_dir_if_missing
+def create_dir
+def save_file
+def calculate_full_destination_path
+def calculate_full_file_path
+def clear_files
+def truncate_filename
+def get_file_extension
+"""
 
 def get_executable_dir():
     """
@@ -61,6 +76,8 @@ def create_file_if_missing(file_path):
                 pass  #pass does nothing but is used when python requires a block to not be empty
             new_file_created = True
         
+        print('create_file_if_missing 3')
+        
         return new_file_created
         
     except Exception as e:
@@ -71,23 +88,40 @@ def create_file_if_missing(file_path):
 
 def create_dir_if_missing(file_path):
     """
-    Ensures the folder for the given file or folder path exists.
-    - If `file_path` is a file, it creates the parent folder if it does not exist.
-    - If `file_path` is a folder, it ensures the folder exists.
+    Ensures a folder is created if it does not exist
     """
     try:
-        is_folder = os.path.isdir(file_path)
-        
-        # Determine the folder path to check
-        if is_folder:
-            folder_path = file_path
-        else:
-            folder_path = os.path.dirname(file_path)
-        
-        folder_exists = os.path.exists(folder_path)
+        #TK
+        print('create_dir_if_missing started')
+        folder_created = False
+        complete_folder_path = calculate_full_file_path(file_path)
+        folder_exists = os.path.exists(complete_folder_path)
         
         if not folder_exists:
+            print('folder does not exist')#TK remove log
             os.makedirs(folder_path)
+            folder_created = True
+        else:#tk remove block
+            print('folder exists')
+
+        return folder_created
+
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in create_dir_if_missing: {e}"
+        messagebox.showerror("Error", error_message)
+
+def create_dir(file_path):
+    """
+    Ensures a folder is created if it does not exist
+    """
+    try:
+        folder_created = False
+        complete_folder_path = calculate_full_file_path(file_path)
+        os.makedirs(complete_folder_path)
+        folder_created = True
+
+        return folder_created
 
     except Exception as e:
         traceback.print_exc()

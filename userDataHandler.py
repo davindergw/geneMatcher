@@ -1,7 +1,7 @@
 import os
 import traceback
 from tkinter import messagebox
-from fileHandler import calculate_full_destination_path, calculate_full_file_path, create_file_if_missing
+from fileHandler import calculate_full_destination_path, calculate_full_file_path, create_file_if_missing, create_dir_if_missing
 
 def read_number_from_file(file_path):
     """Reads a number from a text file. Returns 0 if the file does not exist or is empty."""
@@ -50,8 +50,14 @@ def track_uses():
     Increments the number in the numberOfUses file
     """
     try:
-        numberOfUses_file_path = "data/user/numberOfUses.txt"
+        numberOfUses_file_path = calculate_full_file_path("data/user/numberOfUses.txt")
+        ##############
+        ##############
+        #the user folder is missing. It needs to be created if it doesn't exist
+        user_folder_created = create_dir_if_missing("data/user")
+        print('new folder created', user_folder_created)
         new_file_created = create_file_if_missing(numberOfUses_file_path)
+        print('new_file_created', new_file_created)
         numberOfUses_full_file_path = calculate_full_file_path(numberOfUses_file_path)
         numberOfUses = increment_number_in_file(numberOfUses_file_path)
         return numberOfUses
