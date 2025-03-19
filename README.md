@@ -1,3 +1,5 @@
+# 📥 How to Download & Use Gene Matcher
+
 # SETUP
 
     - At the top of the Gene Matcher page (https://github.com/davindergw/geneMatcher), click on the green 'clone' button

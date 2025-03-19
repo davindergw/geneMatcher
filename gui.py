@@ -200,11 +200,11 @@ def setup_gui():
     - Runs the event loop
     """
     try:
-        global select_button, submit_button, status_label, contact_details, root_window  # Needed for adjust_font function
+        global select_button, submit_button, status_label, results_button, contact_details, root_window  # Needed for adjust_font function
 
         root_window = tk.Tk()  # The main window
         root_window.title("Gene Matcher")
-        root_window.geometry("400x250")
+        root_window.geometry("400x400")
 
         # Creates a grid of 9 rows and 3 columns. The weights are equal so the rows and columns take up the same amount of space within their container.
         for row in range(9):  
@@ -243,7 +243,6 @@ def setup_gui():
         status_label.grid(row=5, column=1, pady=10, sticky="nsew") 
 
         # button for viewing the results file
-        global results_button
         results_button = tk.Button(
             master=root_window,
             text="Open Results File",
@@ -253,6 +252,7 @@ def setup_gui():
         results_button.grid(row=6, column=1, pady=10, sticky="nsew")  
         results_button.grid_remove()  # Hide the button initially
 
+        #Donations button
         donate_button = tk.Button(
             master=root_window,
             text="Support the Developer 💖", 
@@ -264,20 +264,52 @@ def setup_gui():
         )
         donate_button.grid(row=7, column=1, pady=10, sticky="nsew")
 
-        # Contact details information
+        #Contact Details
         contact_details = tk.Label(
             master=root_window,
-            text="Contact the developer at: pythongenematcher@gmail.com",
+            text="Contact the developer at: pythongenematcher@gmail.com" +
+            "\n\n Download the latest version of Gene Matcher at:",
             fg="black",
+            font=("Arial", 10),   
             anchor="center",
             justify="center",   
             wraplength=400  
         )
         contact_details.grid(row=8, column=1, pady=10, sticky="nsew") 
- 
-        root_window.bind("<Configure>", adjust_font) # the adjust_font function will be called every time the configure event occurs. The configure event occurs every time the window resizes
 
+        # Create a Text widget with Arial font
+        contact_text = tk.Text(
+            root_window,
+            height=3,
+            width=50,
+            wrap="word",
+            borderwidth=0,
+            bg=root_window.cget("bg"),
+            font=("Arial", 10)
+        )
+        contact_text.insert("1.0", "Contact the developer at:\npythongenematcher@gmail.com\n\n")
+        contact_text.insert("end", "Download the latest version of Gene Matcher at: ")
+
+        # Insert the clickable link
+        contact_text.insert("end", "https://github.com/davindergw/geneMatcher/blob/main/README.md", "link")
+
+        # Apply center alignment using a tag
+        contact_text.tag_configure("center", justify="center")
+        contact_text.tag_add("center", "1.0", "end")
+
+        # Make the text uneditable
+        contact_text.config(state="disabled")
+
+        # Configure the hyperlink tag
+        contact_text.tag_configure("link", foreground="blue", underline=True)
+        contact_text.tag_bind("link", "<Button-1>", lambda e: webbrowser.open("https://github.com/davindergw/geneMatcher"))
+
+        # Place the widget using grid instead of pack
+        contact_text.grid(row=8, column=1, pady=10, sticky="nsew")
+
+        root_window.bind("<Configure>", adjust_font) # the adjust_font function will be called every time the configure event occurs. The configure event occurs every time the window resizes
         root_window.mainloop()  # Start the Tkinter event loop: An infinite loop that will check for events that have been triggered and redraw the GUI / carry out any function calls in accordance with any events that have occurred
+    
     except Exception as e:
         traceback.print_exc()
         error_message = f"An error occurred in setup_gui: {e}"

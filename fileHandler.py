@@ -91,20 +91,15 @@ def create_dir_if_missing(file_path):
     Ensures a folder is created if it does not exist
     """
     try:
-        #TK
-        print('create_dir_if_missing started')
-        folder_created = False
+        created_folder = False
         complete_folder_path = calculate_full_file_path(file_path)
         folder_exists = os.path.exists(complete_folder_path)
         
         if not folder_exists:
-            print('folder does not exist')#TK remove log
-            os.makedirs(folder_path)
-            folder_created = True
-        else:#tk remove block
-            print('folder exists')
+            os.makedirs(complete_folder_path)
+            created_folder = complete_folder_path
 
-        return folder_created
+        return created_folder
 
     except Exception as e:
         traceback.print_exc()
@@ -116,12 +111,12 @@ def create_dir(file_path):
     Ensures a folder is created if it does not exist
     """
     try:
-        folder_created = False
+        created_folder = False
         complete_folder_path = calculate_full_file_path(file_path)
         os.makedirs(complete_folder_path)
-        folder_created = True
+        created_folder = complete_folder_path
 
-        return folder_created
+        return created_folder
 
     except Exception as e:
         traceback.print_exc()
