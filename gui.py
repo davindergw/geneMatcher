@@ -7,10 +7,12 @@ import webbrowser
 from documentGenerator import generate_document
 from fileHandler import copy_file, clear_files, save_file, truncate_filename, get_file_extension
 from userDataHandler import track_uses
+import pandas as pd
 
 # Global variables
 source_file_path = None
 status_label = None
+
 
 def adjust_font(event=None):
     """ 
@@ -82,6 +84,8 @@ def submit():
             display_donation_reminder(numberOfUses)
 
         display_results_file_link(results_file)
+        """
+        """
     
     except Exception as e:
         traceback.print_exc()
@@ -100,12 +104,11 @@ def process_file():
             messagebox.showwarning("No File", "Please select a file before submitting.")
             return
         clear_files() #Clear old files from the folders
-        dataFile = copy_file(source_file_path, "data/input")
         resultFile = generate_document(source_file_path) # Generate a data frame using the copied file
         
         # Saving the file
         file_extension = get_file_extension(source_file_path)
-        savedResultsFile = save_file(resultFile, f'results{file_extension}', destination_folder="data/results")
+        savedResultsFile = save_file(resultFile, f'results{file_extension}', "data\\results")
         
         # Display a clickable link to open the file
         if savedResultsFile:
@@ -204,7 +207,8 @@ def setup_gui():
 
         root_window = tk.Tk()  # The main window
         root_window.title("Gene Matcher")
-        root_window.geometry("400x400")
+        #root_window.geometry("505x402")
+        root_window.geometry("800x402")
 
         # Creates a grid of 9 rows and 3 columns. The weights are equal so the rows and columns take up the same amount of space within their container.
         for row in range(9):  
@@ -268,7 +272,7 @@ def setup_gui():
         contact_details = tk.Label(
             master=root_window,
             text="Contact the developer at: pythongenematcher@gmail.com" +
-            "\n\n Download the latest version of Gene Matcher at:",
+            "\n\n Find instructions for downloading the latest version of Gene Matcher at:",
             fg="black",
             font=("Arial", 10),   
             anchor="center",

@@ -122,22 +122,67 @@ def create_dir(file_path):
         traceback.print_exc()
         error_message = f"An error occurred in create_dir_if_missing: {e}"
         messagebox.showerror("Error", error_message)
+#tk remove
+def testSave():
+    """
+    Creates a test Excel file and saves it inside a 'test_output' folder
+    in the same directory as the script/executable. This function 
+    also handles all necessary tasks like creating the file and directories.
+    """
+    try:
+        
+        app_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the script/executable
+        save_folder = os.path.join(app_dir, "test_output") # Define the folder and file path
+        os.makedirs(save_folder, exist_ok=True)  # Ensure the folder exists
 
-def save_file(dataframe, file_name, destination_folder="data/results"):
+        file_path = os.path.join(save_folder, "test_file.xlsx")
+
+        # Create sample data
+        data = {"Name": ["Alice", "Bob", "Charlie"], "Age": [25, 30, 35]}
+        df = pd.DataFrame(data)
+
+        # Save to Excel
+        df.to_excel(file_path, index=False)
+        
+        print(f"Test file saved successfully at: {file_path}")
+
+    except Exception as e:
+        print(f"Error saving test file: {e}")
+
+def save_file(dataframe, file_name, destination_folder="data\\results"):
     """
     Saves a pandas DataFrame to an Excel file in the specified destination folder:
      - If the folder does not exist, it is created.
      - Returns the file path of the saved file or None in case of an error.
     """
     try:
-        if not isinstance(dataframe, pd.DataFrame):
+        """if not isinstance(dataframe, pd.DataFrame):
             messagebox.showerror("Error", "Invalid DataFrame. Please provide a valid pandas DataFrame.")
             return None
 
         file_path = calculate_full_destination_path(file_name, destination_folder)
         create_dir_if_missing(file_path)
         dataframe.to_excel(file_path, index=False) #saves the dataframe as an excel file. index=false means the index of each row in the database will not be added in a seperate column
+        return file_path"""
+        file_extension = get_file_extension(file_name)
+        app_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the script/executable
+        print('app_dir', app_dir)
+        print('destination_folder', destination_folder)
+        save_folder = os.path.join(app_dir, destination_folder) # Define the folder and file path
+        print('save_folder', save_folder)
+        os.makedirs(save_folder, exist_ok=True)  # Ensure the folder exists
+        file_path = os.path.join(save_folder, file_name)
+        print('file_path', file_path)
+
+        if file_extension in [".xls", ".xlsx"]:
+            dataframe.to_excel(file_path, index=False)
+        elif file_extension in [".ods"]:
+            dataframe.to_excel(file_path, index=False, engine='odf')
+        
+        print('#######file_path', file_path)
+        
         return file_path
+
     except Exception as e:
         traceback.print_exc()
         error_message = f"An error occurred in save_file: {e}"
