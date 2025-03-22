@@ -3,8 +3,22 @@ import pandas as pd
 import traceback
 from tkinter import messagebox
 import copy
-
 from fileHandler import get_file_extension
+
+"""
+FUNCTIONS
+
+def rename_columns
+def clean_dataframe_to_integers
+def format_cell
+def read_and_clean_column
+def find_matching_strings
+def initialize_matching_strings_positions
+def find_positions
+def populate_positions
+def convert_to_dataframe
+def generate_document
+"""
 
 def rename_columns(dataframe):
     """
@@ -191,7 +205,6 @@ def generate_document(source_file_path):
     try:
         print('=================================================')
         debug = False
-        # determine file extension
         file_extension = get_file_extension(source_file_path)
 
         if file_extension in [".xls", ".xlsx"]:

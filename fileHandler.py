@@ -76,8 +76,6 @@ def create_file_if_missing(file_path):
                 pass  #pass does nothing but is used when python requires a block to not be empty
             new_file_created = True
         
-        print('create_file_if_missing 3')
-        
         return new_file_created
         
     except Exception as e:
@@ -143,11 +141,11 @@ def testSave():
 
         # Save to Excel
         df.to_excel(file_path, index=False)
-        
-        print(f"Test file saved successfully at: {file_path}")
 
     except Exception as e:
-        print(f"Error saving test file: {e}")
+        traceback.print_exc()
+        error_message = f"An error occurred in testSave: {e}"
+        messagebox.showerror("Error", error_message)
 
 def save_file(dataframe, file_name, destination_folder="data\\results"):
     """
@@ -166,20 +164,16 @@ def save_file(dataframe, file_name, destination_folder="data\\results"):
         return file_path"""
         file_extension = get_file_extension(file_name)
         app_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the script/executable
-        print('app_dir', app_dir)
-        print('destination_folder', destination_folder)
         save_folder = os.path.join(app_dir, destination_folder) # Define the folder and file path
-        print('save_folder', save_folder)
         os.makedirs(save_folder, exist_ok=True)  # Ensure the folder exists
         file_path = os.path.join(save_folder, file_name)
-        print('file_path', file_path)
 
         if file_extension in [".xls", ".xlsx"]:
             dataframe.to_excel(file_path, index=False)
         elif file_extension in [".ods"]:
             dataframe.to_excel(file_path, index=False, engine='odf')
-        
-        print('#######file_path', file_path)
+
+        os.chmod(file_path, 0o666)  # Grant read & write permissions to the owner and others
         
         return file_path
 
@@ -230,16 +224,16 @@ def calculate_full_file_path(file_path):
         messagebox.showerror("Error", error_message)
         return None
     
-def clear_files(folders=["data/input", "data/results"]):
+def clear_files(folders=["data\\results"]):
     """
     Clears all files in the specified folders.
     If a folder exists, deletes all regular files inside it.
     """
     try:
-        base_path = get_executable_dir() #path of the currently running script or executable file
-
+        app_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the script/executable
+        
         for folder in folders:
-            folder_path = os.path.join(base_path, folder)
+            folder_path = os.path.join(app_dir, folder)
             if os.path.exists(folder_path):
                 for filename in os.listdir(folder_path): # listdir returns all the folders and file names in a folder path
                     file_path = os.path.join(folder_path, filename)

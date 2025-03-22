@@ -1,14 +1,11 @@
 
-- Get executable saving to work with odf
-- Tidy up saving
-- Update copy file
-- Update clear files
-- Figure out why contact text is not updating
-- Figure out why buttons re-size after submit
-- 'Maybe Later' should be the same size as Donate
-- Check everything works in standard script
-- Codes sign the executable to prevent warnings
-- Notify update throguh in-app message
+- Setup paypal donate
+- Add paypal links
+- Setup installer
+- Setup hosting on github release
+- Update link for where to download
 - Sort out video instructions
+- App video:
+    + include explanation of pyinstaller and inno setup
 
 - Trasnfer WordPress notes to WEBDEVELOPMENT document on programming USB

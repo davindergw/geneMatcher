@@ -3,6 +3,15 @@ import traceback
 from tkinter import messagebox
 from fileHandler import calculate_full_destination_path, calculate_full_file_path, create_file_if_missing, create_dir_if_missing
 
+"""
+FUNCTIONS
+
+def read_number_from_file
+def write_number_to_file
+def increment_number_in_file
+def track_uses
+"""
+
 def read_number_from_file(file_path):
     """Reads a number from a text file. Returns 0 if the file does not exist or is empty."""
     try:

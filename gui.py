@@ -9,9 +9,23 @@ from fileHandler import copy_file, clear_files, save_file, truncate_filename, ge
 from userDataHandler import track_uses
 import pandas as pd
 
+"""
+FUNCTIONS
+
+def adjust_font
+def select_file
+def submit
+def process_file
+def display_donation_reminder
+def display_results_file_link
+def display_donation_options
+def setup_gui
+"""
+
 # Global variables
 source_file_path = None
 status_label = None
+paypal_url = 'https://paypal.me/Davinder321?country.x=GB&locale.x=en_GB'
 
 
 def adjust_font(event=None):
@@ -58,10 +72,11 @@ def select_file():
             file_name = os.path.basename(source_file_path) #gets the filename on the end of the file path
             file_name_truncated = truncate_filename(file_name)
             status_label.config(text=f"Selected: {file_name_truncated}") #f strings allow you to insert variables into strings
+            results_button.config(state=tk.DISABLED)
         else:
             status_label.config(text="No file selected")
 
-        # Force Tkinter to refresh layout after file dialog closes (needed to fix a bug)
+        # refresh layout after file dialog closes (needed to fix a bug)
         root_window.update_idletasks() 
     except Exception as e:
         traceback.print_exc()
@@ -84,8 +99,6 @@ def submit():
             display_donation_reminder(numberOfUses)
 
         display_results_file_link(results_file)
-        """
-        """
     
     except Exception as e:
         traceback.print_exc()
@@ -110,19 +123,76 @@ def process_file():
         file_extension = get_file_extension(source_file_path)
         savedResultsFile = save_file(resultFile, f'results{file_extension}', "data\\results")
         
-        # Display a clickable link to open the file
+        # Configure the results button to open the file
         if savedResultsFile:
             results_button.config(
-                state="normal",  # Enable the button
                 command=lambda: os.startfile(savedResultsFile)  # Open the file
             )
-            results_button.grid() 
 
         return savedResultsFile
     
     except Exception as e:
         traceback.print_exc()
         error_message = f"An error occurred in process_file: {e}"
+        messagebox.showerror("Error", error_message)
+
+def display_donation_options():
+    """
+    Displays a pop up containing links to Buy Me a Coffe and Paypal donate
+    """
+    try:
+        popup = tk.Toplevel(root_window)
+        popup.title("Donation Options")
+
+        # Get the dimensions of the main window
+        root_x = root_window.winfo_x()
+        root_y = root_window.winfo_y()
+        root_width = root_window.winfo_width()
+        root_height = root_window.winfo_height()
+
+        popup_width = 300
+        popup_height = 130
+
+        # Calculate the position at centre of main window
+        pos_x = root_x + (root_width // 2) - (popup_width // 2)
+        pos_y = root_y + (root_height // 2) - (popup_height // 2)
+
+        # Apply calculated position
+        popup.geometry(f"{popup_width}x{popup_height}+{pos_x}+{pos_y}")
+
+        label = tk.Label(
+            popup,
+            text="Support the developer via Buy Me a Coffee or PayPal Donate:",
+            font=("Arial", 12),
+            fg="black",
+            wraplength=280,
+            justify="center"
+        )
+        label.pack(pady=5)
+
+        # Button to open donation link
+        coffee_button = tk.Button(
+            popup,
+            text="☕ Buy Me a Coffee",
+            bg="#ffd966",
+            cursor="hand2",
+            command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()] #lambada lets you define anonymous funcitons
+        )
+        coffee_button.pack(pady=5)
+
+        # "Maybe Later" button
+        paypal_button = tk.Button(
+            popup,
+            text="💳 Paypal Donate",
+            bg="#ffd966",
+            cursor="hand2",
+            command=lambda: [webbrowser.open(paypal_url), popup.destroy()] #lambada lets you define anonymous funcitons
+        )
+        paypal_button.pack(pady=5)
+    
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"An error occurred in display_donation_options: {e}"
         messagebox.showerror("Error", error_message)
 
 def display_donation_reminder(numberOfUses):
@@ -140,8 +210,8 @@ def display_donation_reminder(numberOfUses):
         root_width = root_window.winfo_width()
         root_height = root_window.winfo_height()
 
-        popup_width = 300
-        popup_height = 150
+        popup_width = 400
+        popup_height = 280
 
         # Calculate the position at centre of main window
         pos_x = root_x + (root_width // 2) - (popup_width // 2)
@@ -150,29 +220,53 @@ def display_donation_reminder(numberOfUses):
         # Apply calculated position
         popup.geometry(f"{popup_width}x{popup_height}+{pos_x}+{pos_y}")
 
-        label = tk.Label(
+        label1 = tk.Label(
             popup,
-            text=f"You have used Gene Matcher {numberOfUses} times!\n\n"
-                 "Please consider supporting the creator through the website 'Buy Me a Coffee'.",
-            font=("Arial", 12),
+            text=f"You have used Gene Matcher {numberOfUses} times!",
+            font=("Arial", 15, "bold"),
             fg="black",
-            wraplength=280,
+            wraplength=380,
             justify="center"
         )
-        label.pack(pady=5)
+        label1.pack(pady=5)
+
+        label2 = tk.Label(
+            popup,
+            text="This app is free and open-source, but took time to build. If you find it useful, please consider supporting the developer.\n\n"
+                  "Support via Buy Me a Coffee or PayPal Donate:",
+            font=("Arial", 12),
+            fg="black",
+            wraplength=380,
+            justify="center"
+        )
+        label2.pack(pady=5)
 
         # Button to open donation link
-        donate_button = tk.Button(
+        coffee_button = tk.Button(
             popup,
-            text="Donate Now",
-            bg="#ffd966",
+            text="☕ Buy Me a Coffee",
+            bg="#ffd966", #gets the background colour for the popup window
             cursor="hand2",
             command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()] #lambada lets you define anonymous funcitons
         )
-        donate_button.pack(pady=5)
+        coffee_button.pack(pady=5)
+
+         # Button to open donation link
+        paypal_button = tk.Button(
+            popup,
+            text="💳 Paypal Donate",
+            bg="#ffd966", #gets the background colour for the popup window
+            cursor="hand2",
+            command=lambda: [webbrowser.open(paypal_url), popup.destroy()] #lambada lets you define anonymous funcitons
+        )
+        paypal_button.pack(pady=5)
 
         # "Maybe Later" button
-        maybe_later_button = tk.Button(popup, text="Maybe Later", command=popup.destroy)
+        maybe_later_button = tk.Button(
+            popup, text="Maybe Later", 
+            bg=popup.cget("bg"),
+            cursor="hand2",
+            command=popup.destroy)
         maybe_later_button.pack(pady=5)
     
     except Exception as e:
@@ -189,7 +283,6 @@ def display_results_file_link(results_file):
             state="normal",  # Enable the button
             command=lambda: os.startfile(results_file)  # Open the file
         )
-        results_button.grid() 
     
     except Exception as e:
         traceback.print_exc()
@@ -208,7 +301,7 @@ def setup_gui():
         root_window = tk.Tk()  # The main window
         root_window.title("Gene Matcher")
         #root_window.geometry("505x402")
-        root_window.geometry("800x402")
+        root_window.geometry("500x500")
 
         # Creates a grid of 9 rows and 3 columns. The weights are equal so the rows and columns take up the same amount of space within their container.
         for row in range(9):  
@@ -254,7 +347,6 @@ def setup_gui():
             command=lambda: os.startfile(savedResultsFile)  # Opens file when clicked
         )
         results_button.grid(row=6, column=1, pady=10, sticky="nsew")  
-        results_button.grid_remove()  # Hide the button initially
 
         #Donations button
         donate_button = tk.Button(
@@ -264,7 +356,7 @@ def setup_gui():
             bg="#ffd966",  
             fg="black",   
             cursor="hand2",
-            command=lambda: [webbrowser.open("https://buymeacoffee.com/davinder"), popup.destroy()]
+            command=display_donation_options
         )
         donate_button.grid(row=7, column=1, pady=10, sticky="nsew")
 
@@ -292,7 +384,7 @@ def setup_gui():
             font=("Arial", 10)
         )
         contact_text.insert("1.0", "Contact the developer at:\npythongenematcher@gmail.com\n\n")
-        contact_text.insert("end", "Download the latest version of Gene Matcher at: ")
+        contact_text.insert("end", "Instructions for downloading the latest version of Gene Matcher can be found at: ")
 
         # Insert the clickable link
         contact_text.insert("end", "https://github.com/davindergw/geneMatcher/blob/main/README.md", "link")
