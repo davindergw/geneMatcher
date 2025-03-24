@@ -1,3 +1,13 @@
-Data/input/*
-Data/results/*
-Data/user/*
+/todo.txt
+
+# Ignore build artifacts from PyInstaller
+dist/
+build/
+*.spec
+
+# Ignore all __pycache__ folders everywhere in the project
+__pycache__/
+
+# Ignore compiled Python files
+*.pyc
+*.pyo

@@ -1,25 +1,22 @@
-# 📥 How to Download & Use Gene Matcher
+## License
+This software is released under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
 
-# SETUP
+This software is free to use and modify, but if you find it useful and would like to support the continued development of this project, please consider making a donation to the original project at:
 
-    - At the top of the Gene Matcher page (https://github.com/davindergw/geneMatcher), click on the green 'clone' button
-    - From the dialog that opens up, click 'download Zip'
-    - When the download is complete, go to your downloads folder
-    - Right click the geneMatcher-main.zip file and click 'Extract All'
-    - Click extract (you can change the folder you want the files to appear in by clicking the browse button)
-    - Within the extracted geneMatcher-main folder, run the gui.exe file at: dist/gui.exe
-    - You may get a warning from windows saying the file is unprotected. If this occurs click 'More Info' and then 'Run Anyway'
-    - The program may take a bit of time to load: After a while you should see a black console log appear. Then a bit later the control panel will appear
+    https://buymeacoffee.com/davinder
 
-# FOR DEVELOPMENT
+    https://paypal.me/Davinder321?country.x=GB&locale.x=en_GB
 
-    - GeneMatcher is written in Python
-    - To install the necessary dependencies:
-        + Run the command 'pip install pandas openpyxl' from the root fodler
-        + Run the command 'pip install odfpy' from the root folder
+## Donations
+If you fork this software, we kindly ask that you continue supporting the original project via donations. Thank you for supporting open-source development!
 
-    - The entry point file is gui.py, inside the root folder
-    - To run the program run the command python gui.py in the root folder
-    - To create a new executable file for the program run the command pyinstaller --onefile gui.py in the root folder.
+# For Development
+- GeneMatcher is written in Python
+- To install the necessary dependencies:
+    + Run the command 'pip install pandas openpyxl' from the root fodler
+    + Run the command 'pip install odfpy' from the root folder
+
+- The entry point file is main.py, inside the root folder
+- To run the program run the command 'python main.py' in the root folder
 
 
