@@ -15,3 +15,5 @@ USER_FOLDER = os.path.join(DATA_FOLDER, "user")
 NUMBER_OF_USES_FILE = os.path.join(USER_FOLDER, "number_of_uses.txt")
 
 ALL_FOLDERS = [APP_DATA_FOLDER, DATA_FOLDER, INPUT_FOLDER, RESULTS_FOLDER, USER_FOLDER]
+
+RELEASE_LINK = "https://github.com/davindergw/geneMatcher/releases"

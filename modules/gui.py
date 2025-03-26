@@ -369,7 +369,7 @@ def setup_gui():
         contact_details = tk.Label(
             master=root_window,
             text="Contact the developer at: pythongenematcher@gmail.com" +
-            "\n\n Find instructions for downloading the latest version of Gene Matcher at:",
+            "\n\n Downloading the latest version of Gene Matcher at:",
             fg="black",
             font=("Arial", 10),   
             anchor="center",
@@ -389,10 +389,10 @@ def setup_gui():
             font=("Arial", 10)
         )
         contact_text.insert("1.0", "Contact the developer at:\npythongenematcher@gmail.com\n\n")
-        contact_text.insert("end", "Instructions for downloading the latest version of Gene Matcher can be found at: ")
+        contact_text.insert("end", "The latest version of Gene Matcher can be installed at: ")
 
         # Insert the clickable link
-        contact_text.insert("end", "https://github.com/davindergw/geneMatcher/blob/main/README.md", "link")
+        contact_text.insert("end", "https://github.com/davindergw/geneMatcher/releases", "link")
 
         # Apply center alignment using a tag
         contact_text.tag_configure("center", justify="center")
@@ -403,7 +403,7 @@ def setup_gui():
 
         # Configure the hyperlink tag
         contact_text.tag_configure("link", foreground="blue", underline=True)
-        contact_text.tag_bind("link", "<Button-1>", lambda e: webbrowser.open("https://github.com/davindergw/geneMatcher"))
+        contact_text.tag_bind("link", "<Button-1>", lambda e: webbrowser.open("https://github.com/davindergw/geneMatcher/releases"))
 
         # Place the widget using grid instead of pack
         contact_text.grid(row=8, column=1, pady=10, sticky="nsew")
