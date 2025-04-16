@@ -210,7 +210,7 @@ def generate_document(source_file_path):
     """
     try:
         print('=================================================')
-        debug = False
+        debug = true
         file_extension = get_file_extension(source_file_path)
 
         if file_extension in [".xls", ".xlsx"]:
