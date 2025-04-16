@@ -210,7 +210,7 @@ def generate_document(source_file_path):
     """
     try:
         print('=================================================')
-        debug = true
+        debug = True
         file_extension = get_file_extension(source_file_path)
 
         if file_extension in [".xls", ".xlsx"]:
@@ -226,8 +226,9 @@ def generate_document(source_file_path):
         column2_strings = read_and_clean_column(df_to_analyse, "Set 2")
         matching_strings = find_matching_strings(column1_strings, column2_strings)
         matching_strings_positions_empty = initialize_matching_strings_positions(matching_strings)
-        matching_strings_positions_populated = populate_positions(df_to_analyse, matching_strings_positions_empty)
-        matching_strings_df = convert_to_dataframe(matching_strings_positions_populated)
+        # matching_strings_positions_populated = populate_positions(df_to_analyse, matching_strings_positions_empty)
+        # matching_strings_df = convert_to_dataframe(matching_strings_positions_populated)
+        matching_strings_df = pd.DataFrame()
 
         if debug:
             print('df_to_analyse\n', df_to_analyse, '\n')
@@ -235,8 +236,8 @@ def generate_document(source_file_path):
             print('COLUMN 2\n', column2_strings, '\n')
             print('Matching Strings\n', matching_strings, '\n')
             print('matching_strings_positions_empty\n', matching_strings_positions_empty, '\n')
-            print('matching_strings_positions_populated\n', matching_strings_positions_populated, '\n')
-            print('matching_strings_df\n', matching_strings_df)
+            # print('matching_strings_positions_populated\n', matching_strings_positions_populated, '\n')
+            # print('matching_strings_df\n', matching_strings_df)
         else:
             pass
             print('\n Matching Genes:')
