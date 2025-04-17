@@ -203,6 +203,62 @@ def convert_to_dataframe(matching_strings_positions):
         error_message = f"Error in convert_to_dataframe: {e}"
         messagebox.showerror("Error", error_message)
 
+def add_count(matching_strings_positions):
+    """
+    Adds a new field for each gene that stores the number of counts for the column with the highest number of counts
+    """
+    try:
+        matching_string_positions_copy = copy.deepcopy(matching_strings_positions)
+
+        for row in matching_string_positions_copy:
+            column_1_count = len(row['Column 1'])
+            column_2_count = len(row['Column 2'])
+            highest_count = max(column_1_count, column_2_count)
+            row['Column 1 Count'] = column_1_count
+            row['Column 2 Count'] = column_2_count
+            row['Highest Count'] = highest_count
+
+        return matching_string_positions_copy
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"Error in add_count: {e}"
+        messagebox.showerror("Error", error_message)
+
+def break_down(matching_strings):
+    """
+    Creates a new spread sheet template with each seperate gene position having its own cell within the 
+    """
+    try:
+        matching_strings_copy = copy.deepcopy(matching_strings)
+        matching_strings_broken_down = []
+
+        for row in matching_strings_copy:
+            highest_count = row['Highest Count']
+
+            for i in range(highest_count):
+                column_1_count = row['Column 1 Count']
+                column_2_count = row['Column 2 Count']
+                column_1_in_range = i +1 <= column_1_count
+                column_2_in_range = i +1 <= column_2_count
+                new_row = {'Gene': '', 'Column 1': '', 'Column 2': ''}
+
+                if i == 0:
+                    new_row['Gene'] = row['Gene']
+
+                if column_1_in_range:
+                    new_row['Column 1'] = row['Column 1'][i]
+                    
+                if column_2_in_range:
+                    new_row['Column 2'] = row['Column 2'][i]
+
+                matching_strings_broken_down.append(new_row)
+        
+        return matching_strings_broken_down
+    except Exception as e:
+        traceback.print_exc()
+        error_message = f"Error in add_count: {e}"
+        messagebox.showerror("Error", error_message)
+
 def generate_document(source_file_path):
     """
     Processes the input file to identify matching strings and returns a DataFrame
@@ -210,7 +266,7 @@ def generate_document(source_file_path):
     """
     try:
         print('=================================================')
-        debug = True
+        debug = False
         file_extension = get_file_extension(source_file_path)
 
         if file_extension in [".xls", ".xlsx"]:
@@ -226,9 +282,10 @@ def generate_document(source_file_path):
         column2_strings = read_and_clean_column(df_to_analyse, "Set 2")
         matching_strings = find_matching_strings(column1_strings, column2_strings)
         matching_strings_positions_empty = initialize_matching_strings_positions(matching_strings)
-        # matching_strings_positions_populated = populate_positions(df_to_analyse, matching_strings_positions_empty)
-        # matching_strings_df = convert_to_dataframe(matching_strings_positions_populated)
-        matching_strings_df = pd.DataFrame()
+        matching_strings_positions_populated = populate_positions(df_to_analyse, matching_strings_positions_empty)
+        matching_strings_positions_populated_with_count = add_count(matching_strings_positions_populated)
+        matching_strings_positions_broken_down = break_down(matching_strings_positions_populated_with_count)
+        matching_strings_df = convert_to_dataframe(matching_strings_positions_broken_down)
 
         if debug:
             print('df_to_analyse\n', df_to_analyse, '\n')
@@ -236,8 +293,9 @@ def generate_document(source_file_path):
             print('COLUMN 2\n', column2_strings, '\n')
             print('Matching Strings\n', matching_strings, '\n')
             print('matching_strings_positions_empty\n', matching_strings_positions_empty, '\n')
-            # print('matching_strings_positions_populated\n', matching_strings_positions_populated, '\n')
-            # print('matching_strings_df\n', matching_strings_df)
+            print('matching_strings_positions_populated\n', matching_strings_positions_populated, '\n')
+            print('matching_strings_positions_broken_down\n', matching_strings_positions_broken_down, '\n')
+            print('matching_strings_df\n', matching_strings_df)
         else:
             pass
             print('\n Matching Genes:')
