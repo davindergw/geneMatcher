@@ -95,11 +95,31 @@ def read_and_clean_column(df, column_name):
         - Converts numeric values to string
         - Remove duplicate cells
     """
-    try:
+    try: 
+        pd.set_option('display.max_rows', None)
         column_series = df[column_name] # returns a panda series, which is an array like data structure
+        if(column_name == 'Set 1'):
+            print('\n\n########### column_series', column_series)
+        
         cleaned_series = column_series.dropna() # removes empty cells from the series
+        cleaned_series = column_series[column_series != 0] #removing zeros
+
+        if(column_name == 'Set 1'):
+            print('\n\n########### cleaned_series', cleaned_series)
+        
+        
         string_series = cleaned_series.apply(format_cell) # Converts numeric values to string
+        
+        if(column_name == 'Set 1'):
+            print('\n\n########### string_series', string_series)
+        
+        
         unique_values = string_series.unique() #removes duplicates
+
+        if(column_name == 'Set 1'):
+            print('\n\n########### unique_values', unique_values)
+        
+        
         column_list = list(unique_values) # puts the values into a list: an array like structure that is easier to manipulate than a normal array
 
         return column_list
@@ -298,8 +318,8 @@ def generate_document(source_file_path):
             print('matching_strings_df\n', matching_strings_df)
         else:
             pass
-            print('\n Matching Genes:')
-            print('\n', matching_strings_df)
+            #print('\n Matching Genes:')
+            #print('\n', matching_strings_df)
         return matching_strings_df
     except Exception as e:
         traceback.print_exc()
